@@ -12,7 +12,6 @@ from music_tagger_cnn import MusicTaggerCNN
 from utils import save_data, load_dataset, save_dataset, sort_result, predict_label, extract_melgrams
 import matplotlib.pyplot as plt
 
-# Parameters to set
 TEST = 1
 
 LOAD_MODEL = 0
@@ -20,11 +19,9 @@ LOAD_WEIGHTS = 1
 MULTIFRAMES = 1
 time_elapsed = 0
 
-# GTZAN Dataset Tags
 tags = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
 tags = np.array(tags)
 
-# Paths to set
 model_name = "example_model"
 model_path = "models_trained/" + model_name + "/"
 weights_path = "models_trained/" + model_name + "/weights/"
@@ -50,7 +47,7 @@ num_frames_test = np.array(num_frames_test)
 
 t0 = time.time()
 
-print '\n--------- Predicting ---------','\n'
+print '\nTesting started ====================>','\n'
 
 results = np.zeros((X_test.shape[0], tags.shape[0]))
 predicted_labels_mean = np.zeros((num_frames_test.shape[0], 1))
@@ -64,7 +61,6 @@ for i in range(0, num_frames_test.shape[0]):
     print 'Song number' +str(i)+ ': ' + song_paths[i]
 
     num_frames=num_frames_test[i]
-    print 'Num_frames of 30s: ', str(num_frames),'\n'
 
     results[previous_numFrames:previous_numFrames+num_frames] = model.predict(
         X_test[previous_numFrames:previous_numFrames+num_frames, :, :, :])
@@ -74,8 +70,8 @@ for i in range(0, num_frames_test.shape[0]):
         #normalize the results
         total = results[j,:].sum()
         results[j,:]=results[j,:]/total
-        print 'Percentage of genre prediction for seconds '+ str(20+s_counter*30) + ' to ' \
-            + str(20+(s_counter+1)*30) + ': '
+        #print 'Percentage of genre prediction for seconds '+ str(20+s_counter*30) + ' to ' \
+        #    + str(20+(s_counter+1)*30) + ': '
         sort_result(tags, results[j,:].tolist())
 
         predicted_label_frames=predict_label(results[j,:])
@@ -83,7 +79,7 @@ for i in range(0, num_frames_test.shape[0]):
         s_counter += 1
         n+=1
 
-    print '\n', 'Mean genre of the song: '
+    #print '\n', 'Mean genre of the song: '
     results_song = results[previous_numFrames:previous_numFrames+num_frames]
 
     mean=results_song.mean(0)
@@ -96,22 +92,4 @@ for i in range(0, num_frames_test.shape[0]):
 
     previous_numFrames = previous_numFrames+num_frames
 
-    print '************************************************************************************************'
-
-colors = ['b','g','c','r','m','k','y','#ff1122','#5511ff','#44ff22']
-fig, ax = plt.subplots()
-index = np.arange(tags.shape[0])
-opacity = 1
-bar_width = 0.2
-print mean
-#for g in range(0, tags.shape[0]):
-plt.bar(left=index, height=mean, width=bar_width, alpha=opacity, color=colors)
-
-plt.xlabel('Genres')
-plt.ylabel('Percentage')
-plt.title('Scores by genre')
-plt.xticks(index + bar_width / 2, tags)
-plt.tight_layout()
-fig.autofmt_xdate()
-plt.savefig('genres_prediction.png')
-
+    print '================================================================================'
